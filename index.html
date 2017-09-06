@@ -3,11 +3,26 @@
   <head>
     <meta charset="utf-8">
     <title></title>
-  <script src="dist/bundle.js"></script>
-
+    <style>
+    canvas {
+      border: 1px solid red;
+    }
+      #canvas {
+          display: block;
+          margin: 0 auto;
+      }
+   </style>
   </head>
   <body>
-    <canvas>
-    </canvas>
+
+    <div>
+      <canvas id="canvas" height="600" width="900"></canvas>
+    </div>
+
+
+    <!-- JS -->
+    <script src="dist/bundle.js"></script>
+    <script src="src/testfile.js"></script>
+
   </body>
 </html>
