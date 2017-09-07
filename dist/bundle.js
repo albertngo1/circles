@@ -109,11 +109,37 @@ var Game = function () {
       });
     }
   }, {
+    key: 'step',
+    value: function step() {
+      this.moveObjects();
+      this.checkCollisions();
+    }
+  }, {
     key: 'moveObjects',
     value: function moveObjects() {
       this.circles.forEach(function (el) {
         el.move();
       });
+    }
+  }, {
+    key: 'remove',
+    value: function remove(object) {
+      this.circles.splice(this.circles.indexOf(object), 1);
+    }
+  }, {
+    key: 'checkCollisions',
+    value: function checkCollisions() {
+      for (var i = 0; i < this.circles.length; i++) {
+        for (var j = 0; j < this.circles.length; j++) {
+          if (i === j) {
+            continue;
+          } else {
+            if (this.circles[i].isCollidedWith(this.circles[j])) {
+              this.circles[i].collideWith(this.circles[j]);
+            }
+          }
+        }
+      }
     }
   }, {
     key: 'wrap',
@@ -246,10 +272,31 @@ var MovingObject = function () {
   }, {
     key: 'move',
     value: function move() {
-      var velocityScale = 400 / NORMAL_FRAME_TIME_DELTA;
+      var velocityScale = 100 / NORMAL_FRAME_TIME_DELTA;
       var offsetX = this.vel[0] * velocityScale;
       var offsetY = this.vel[1] * velocityScale;
       this.pos = this.game.wrap([this.pos[0] + offsetX, this.pos[1] + offsetY]);
+    }
+  }, {
+    key: 'collideWith',
+    value: function collideWith(otherObject) {
+      var smallCircle = this.radius >= otherObject.radius ? otherObject : this;
+      var bigCircle = this.radius >= otherObject.radius ? this : otherObject;
+
+      this.game.remove(smallCircle);
+
+      bigCircle.radius *= 1.1;
+    }
+  }, {
+    key: 'isCollidedWith',
+    value: function isCollidedWith(otherObject) {
+      var dist = Math.sqrt(Math.pow(otherObject.pos[1] - this.pos[1], 2) + Math.pow(otherObject.pos[0] - this.pos[0], 2));
+
+      if (dist < this.radius + otherObject.radius) {
+        return true;
+      } else {
+        return false;
+      }
     }
   }]);
 
@@ -304,7 +351,7 @@ var GameView = function () {
       var _this = this;
 
       window.setInterval(function () {
-        return _this.game.moveObjects();
+        return _this.game.step();
       }, 20);
       window.setInterval(function () {
         return _this.game.draw(_this.ctx);

@@ -28,10 +28,38 @@ class Game {
     })
   }
 
+  step() {
+    this.moveObjects();
+    this.checkCollisions();
+  }
+
+
+
+
+
   moveObjects() {
     this.circles.forEach( el => {
       el.move();
     });
+  }
+
+  remove(object) {
+    this.circles.splice(this.circles.indexOf(object), 1)
+  }
+
+  checkCollisions() {
+    for (let i=0; i < this.circles.length; i++) {
+      for (let j=0; j < this.circles.length; j++) {
+        if (i === j) {
+          continue;
+        } else {
+          if (this.circles[i].isCollidedWith(this.circles[j])) {
+            this.circles[i].collideWith(this.circles[j]);
+          }
+
+        }
+      }
+    }
   }
 
   wrap(pos) {
