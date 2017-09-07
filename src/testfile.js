@@ -1,9 +1,3 @@
-
-const canvas = document.querySelector('canvas');
-const ctx = canvas.getContext('2d');
-const radius = 10;
-
-
 let canvasPos = getPosition(canvas);
 console.log(canvasPos);
 let mouseX;
@@ -47,3 +41,5 @@ function getPosition(el) {
     y: yPosition
   };
 }
+
+module.exports = Test;

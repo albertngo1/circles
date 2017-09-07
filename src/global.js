@@ -6,6 +6,3 @@ module.exports = {
   KEY_RIGHT: 39,
   KEY_DOWN: 40
 }
-
-
-#f2fbff

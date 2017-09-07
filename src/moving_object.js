@@ -1,3 +1,4 @@
+const Game = require('./game')
 
 class MovingObject {
 
@@ -6,21 +7,22 @@ class MovingObject {
     this.vel = options.vel;
     this.radius = options.radius;
     this.color = options.color;
+    this.game = options.game;
 
   }
 
   draw(ctx) {
     ctx.fillStyle = this.color;
     ctx.beginPath();
-    ctx.arc(this.pos[0], this.pos[1], this.radius, 0, 2 * Math.PI, false);
+    ctx.arc(Math.floor(this.pos[0]), Math.floor(this.pos[1]), this.radius, 0, 2 * Math.PI, false);
     ctx.fill();
   }
 
-  move(timeDelta) {
-    const velocityScale = timeDelta / NORMAL_FRAME_TIME_DELTA;
-    offsetX = this.vel[0] * velocityScale;
-    offsetY = this.vel[1] * velocityScale;
-    this.pos = [this.pos[0] + offsetX, this.pos[1] + offsetY];
+  move() {
+    const velocityScale = 400 / NORMAL_FRAME_TIME_DELTA;
+    let offsetX = this.vel[0] * velocityScale;
+    let offsetY = this.vel[1] * velocityScale;
+    this.pos = this.game.wrap([this.pos[0] + offsetX, this.pos[1] + offsetY]);
 
   }
 
