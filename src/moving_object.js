@@ -18,8 +18,8 @@ class MovingObject {
     ctx.fill();
   }
 
-  move() {
-    const velocityScale = 100 / NORMAL_FRAME_TIME_DELTA;
+  move(timeDelta = 1) {
+    const velocityScale = timeDelta / NORMAL_FRAME_TIME_DELTA;
     let offsetX = this.vel[0] * velocityScale;
     let offsetY = this.vel[1] * velocityScale;
     this.pos = this.game.wrap([this.pos[0] + offsetX, this.pos[1] + offsetY]);

@@ -36,8 +36,8 @@ class Game {
   }
 
 
-  step() {
-    this.moveObjects();
+  step(delta) {
+    this.moveObjects(delta);
     this.checkCollisions();
   }
 
@@ -45,10 +45,10 @@ class Game {
 
 
 
-  moveObjects() {
+  moveObjects(timeDelta) {
     const allObjects = this.allObjects();
     allObjects.forEach( el => {
-      el.move();
+      el.move(timeDelta);
     });
   }
 

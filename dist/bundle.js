@@ -118,16 +118,16 @@ var Game = function () {
     }
   }, {
     key: 'step',
-    value: function step() {
-      this.moveObjects();
+    value: function step(delta) {
+      this.moveObjects(delta);
       this.checkCollisions();
     }
   }, {
     key: 'moveObjects',
-    value: function moveObjects() {
+    value: function moveObjects(timeDelta) {
       var allObjects = this.allObjects();
       allObjects.forEach(function (el) {
-        el.move();
+        el.move(timeDelta);
       });
     }
   }, {
@@ -287,7 +287,9 @@ var MovingObject = function () {
   }, {
     key: 'move',
     value: function move() {
-      var velocityScale = 100 / NORMAL_FRAME_TIME_DELTA;
+      var timeDelta = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
+
+      var velocityScale = timeDelta / NORMAL_FRAME_TIME_DELTA;
       var offsetX = this.vel[0] * velocityScale;
       var offsetY = this.vel[1] * velocityScale;
       this.pos = this.game.wrap([this.pos[0] + offsetX, this.pos[1] + offsetY]);
@@ -363,25 +365,29 @@ var GameView = function () {
 
     this.game = game;
     this.ctx = ctx;
+    this.lastTime = 0;
   }
 
   _createClass(GameView, [{
     key: 'start',
     value: function start() {
-      var _this = this;
-
       this.bindKeyHandlers();
+      this.lastTime = 0;
+      requestAnimationFrame(this.animate.bind(this));
+    }
+  }, {
+    key: 'animate',
+    value: function animate(time) {
+      var delta = time - this.lastTime;
 
-      window.setInterval(function () {
-        _this.game.userCircles[0].vel[0] *= .95;
-        _this.game.userCircles[0].vel[1] *= .95;
-      }, 20);
-      window.setInterval(function () {
-        return _this.game.step();
-      }, 20);
-      window.setInterval(function () {
-        return _this.game.draw(_this.ctx);
-      }, 20);
+      this.game.userCircles[0].vel[0] *= .95;
+      this.game.userCircles[0].vel[1] *= .95;
+
+      this.game.step(delta);
+      this.game.draw(this.ctx);
+      this.lastTime = time;
+
+      requestAnimationFrame(this.animate.bind(this));
     }
   }, {
     key: 'bindKeyHandlers',
@@ -400,10 +406,10 @@ var GameView = function () {
 }();
 
 GameView.KEYS = {
-  "w": [0, -.9],
-  "a": [-.9, 0],
-  "s": [0, .9],
-  "d": [.9, 0]
+  "w": [0, -1],
+  "a": [-1, 0],
+  "s": [0, 1],
+  "d": [1, 0]
 };
 
 module.exports = GameView;

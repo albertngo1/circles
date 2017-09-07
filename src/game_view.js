@@ -8,21 +8,28 @@ class GameView {
   constructor(game, ctx) {
     this.game = game;
     this.ctx = ctx;
+    this.lastTime = 0;
   }
 
   start() {
     this.bindKeyHandlers();
-
-
-    window.setInterval(() => {
-      this.game.userCircles[0].vel[0] *= .95
-      this.game.userCircles[0].vel[1] *= .95
-    }, 20);
-    window.setInterval(() => this.game.step(), 20);
-    window.setInterval(() => this.game.draw(this.ctx), 20);
+    this.lastTime = 0;
+    requestAnimationFrame(this.animate.bind(this));
   }
 
+  animate(time) {
+    let delta = time - this.lastTime;
 
+
+    this.game.userCircles[0].vel[0] *= .95
+    this.game.userCircles[0].vel[1] *= .95
+
+    this.game.step(delta);
+    this.game.draw(this.ctx);
+    this.lastTime = time;
+
+    requestAnimationFrame(this.animate.bind(this));
+  }
 
 
 
@@ -40,10 +47,10 @@ class GameView {
 }
 
 GameView.KEYS = {
-  "w": [0, -.9],
-  "a": [-.9, 0],
-  "s": [0, .9],
-  "d": [.9, 0]
+  "w": [0, -1],
+  "a": [-1, 0],
+  "s": [0, 1],
+  "d": [1, 0]
 }
 
 module.exports = GameView;
