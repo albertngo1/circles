@@ -1,10 +1,12 @@
 const Circle = require('./circle');
 const Util = require('./util');
+const UserCircle = require('./user_circle');
 
 class Game {
 
   constructor() {
     this.circles = [];
+    this.userCircle = [new UserCircle({game: this})];
     this.addCircles();
   }
 
@@ -21,12 +23,18 @@ class Game {
     return [x, y];
   }
 
+  allObjects() {
+     return [].concat(this.circles, this.userCircle);
+  }
+
   draw(ctx) {
     ctx.clearRect(0, 0, Game.DIM_X, Game.DIM_Y);
-    this.circles.forEach( el => {
+    const allObjects = this.allObjects()
+    allObjects.forEach( el => {
       el.draw(ctx);
     })
   }
+
 
   step() {
     this.moveObjects();
@@ -38,23 +46,29 @@ class Game {
 
 
   moveObjects() {
-    this.circles.forEach( el => {
+    const allObjects = this.allObjects();
+    allObjects.forEach( el => {
       el.move();
     });
   }
 
   remove(object) {
-    this.circles.splice(this.circles.indexOf(object), 1)
+    if (object instanceof Circle) {
+      this.circles.splice(this.circles.indexOf(object), 1);
+    } else if (object instanceof UserCircle) {
+      this.userCircle.splice(this.userCircle.indexOf(object), 1);
+    }
   }
 
   checkCollisions() {
-    for (let i=0; i < this.circles.length; i++) {
-      for (let j=0; j < this.circles.length; j++) {
+    const allObjects = this.allObjects();
+    for (let i=0; i < allObjects.length; i++) {
+      for (let j=0; j < allObjects.length; j++) {
         if (i === j) {
           continue;
         } else {
-          if (this.circles[i].isCollidedWith(this.circles[j])) {
-            this.circles[i].collideWith(this.circles[j]);
+          if (allObjects[i].isCollidedWith(allObjects[j])) {
+            allObjects[i].collideWith(allObjects[j]);
           }
 
         }

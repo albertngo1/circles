@@ -76,12 +76,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var Circle = __webpack_require__(2);
 var Util = __webpack_require__(4);
+var UserCircle = __webpack_require__(7);
 
 var Game = function () {
   function Game() {
     _classCallCheck(this, Game);
 
     this.circles = [];
+    this.userCircle = [new UserCircle({ game: this })];
     this.addCircles();
   }
 
@@ -101,10 +103,16 @@ var Game = function () {
       return [x, y];
     }
   }, {
+    key: 'allObjects',
+    value: function allObjects() {
+      return [].concat(this.circles, this.userCircle);
+    }
+  }, {
     key: 'draw',
     value: function draw(ctx) {
       ctx.clearRect(0, 0, Game.DIM_X, Game.DIM_Y);
-      this.circles.forEach(function (el) {
+      var allObjects = this.allObjects();
+      allObjects.forEach(function (el) {
         el.draw(ctx);
       });
     }
@@ -117,25 +125,31 @@ var Game = function () {
   }, {
     key: 'moveObjects',
     value: function moveObjects() {
-      this.circles.forEach(function (el) {
+      var allObjects = this.allObjects();
+      allObjects.forEach(function (el) {
         el.move();
       });
     }
   }, {
     key: 'remove',
     value: function remove(object) {
-      this.circles.splice(this.circles.indexOf(object), 1);
+      if (object instanceof Circle) {
+        this.circles.splice(this.circles.indexOf(object), 1);
+      } else if (object instanceof UserCircle) {
+        this.userCircle.splice(this.userCircle.indexOf(object), 1);
+      }
     }
   }, {
     key: 'checkCollisions',
     value: function checkCollisions() {
-      for (var i = 0; i < this.circles.length; i++) {
-        for (var j = 0; j < this.circles.length; j++) {
+      var allObjects = this.allObjects();
+      for (var i = 0; i < allObjects.length; i++) {
+        for (var j = 0; j < allObjects.length; j++) {
           if (i === j) {
             continue;
           } else {
-            if (this.circles[i].isCollidedWith(this.circles[j])) {
-              this.circles[i].collideWith(this.circles[j]);
+            if (allObjects[i].isCollidedWith(allObjects[j])) {
+              allObjects[i].collideWith(allObjects[j]);
             }
           }
         }
@@ -284,8 +298,8 @@ var MovingObject = function () {
       var bigCircle = this.radius >= otherObject.radius ? this : otherObject;
 
       this.game.remove(smallCircle);
-
-      bigCircle.radius *= 1.1;
+      bigCircle.vel = [bigCircle.vel[0] * .85, bigCircle.vel[1] * .85];
+      bigCircle.radius = Math.sqrt(Math.pow(smallCircle.radius, 2) + Math.pow(bigCircle.radius, 2));
     }
   }, {
     key: 'isCollidedWith',
@@ -337,6 +351,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var UserCircle = __webpack_require__(5);
+
 var GameView = function () {
   function GameView(game, ctx) {
     _classCallCheck(this, GameView);
@@ -350,6 +366,7 @@ var GameView = function () {
     value: function start() {
       var _this = this;
 
+      this.bindKeyHandlers();
       window.setInterval(function () {
         return _this.game.step();
       }, 20);
@@ -357,12 +374,86 @@ var GameView = function () {
         return _this.game.draw(_this.ctx);
       }, 20);
     }
+  }, {
+    key: "bindKeyHandlers",
+    value: function bindKeyHandlers() {
+      var userCircle = this.game.userCircle;
+
+      Object.keys(GameView.KEYS).forEach(function (el) {
+        debugger;
+        key(el, function () {
+          userCircle.power(GameView.KEYS[el]);
+        });
+      });
+    }
   }]);
 
   return GameView;
 }();
 
+GameView.KEYS = {
+  "w": [0, 1],
+  "a": [-1, 0],
+  "s": [0, -1],
+  "d": [1, 0]
+};
+
 module.exports = GameView;
+
+/***/ }),
+/* 6 */,
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var MovingObject = __webpack_require__(3);
+
+var randomColor = function randomColor() {
+  return 'rgb(' + Math.floor(Math.random() * 255) + ',\n   ' + Math.floor(Math.random() * 255) + ',\n    ' + Math.floor(Math.random() * 255) + ')';
+};
+
+var UserCircle = function (_MovingObject) {
+  _inherits(UserCircle, _MovingObject);
+
+  function UserCircle() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    _classCallCheck(this, UserCircle);
+
+    var _this = _possibleConstructorReturn(this, (UserCircle.__proto__ || Object.getPrototypeOf(UserCircle)).call(this, options));
+
+    _this.color = randomColor();
+    _this.radius = UserCircle.RADIUS;
+    _this.pos = [window.innerWidth / 2, window.innerHeight / 2];
+    _this.vel = [0, 0];
+
+    return _this;
+  }
+
+  _createClass(UserCircle, [{
+    key: 'power',
+    value: function power(impulse) {
+      this.pos[0] += impulse[0];
+      this.pos[1] += impulse[1];
+    }
+  }]);
+
+  return UserCircle;
+}(MovingObject);
+
+UserCircle.RADIUS = 10;
+
+module.exports = UserCircle;
 
 /***/ })
 /******/ ]);

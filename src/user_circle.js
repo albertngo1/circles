@@ -7,25 +7,24 @@ const randomColor = () => {
     ${Math.floor(Math.random() * 255)})`;
 }
 
-const randomRadius = () => {
-  return Math.floor(Math.random() * (30  - 3) + 3);
-}
 
+class UserCircle extends MovingObject {
 
-
-
-class Circle extends MovingObject {
   constructor(options = {}) {
     super(options);
     this.color = randomColor();
-    this.radius = randomRadius();
-    options.pos = options.pos || options.game.randomPosition();
-    options.vel = options.vel || Util.randomVec(0.1);;
+    this.radius = UserCircle.RADIUS;
+    this.pos = [window.innerWidth / 2, window.innerHeight / 2];
+    this.vel = [0, 0]
 
   }
 
-
+  power(impulse) {
+    this.pos[0] += impulse[0];
+    this.pos[1] += impulse[1];
+  }
 }
 
+UserCircle.RADIUS = 10;
 
-module.exports = Circle;
+module.exports = UserCircle;
