@@ -31,10 +31,10 @@ class MovingObject {
     let bigCircle = this.radius >= otherObject.radius ? this : otherObject;
 
     this.game.remove(smallCircle);
-    bigCircle.vel = [bigCircle.vel[0] * .85, bigCircle.vel[1] * .85];
+    bigCircle.vel = [bigCircle.vel[0] * .9, bigCircle.vel[1] * .9];
     bigCircle.radius = Math.sqrt(Math.pow(smallCircle.radius, 2) + Math.pow(bigCircle.radius, 2));
 
-
+    return true;
   }
 
   isCollidedWith(otherObject) {

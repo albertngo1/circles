@@ -19,9 +19,9 @@ class UserCircle extends MovingObject {
 
   }
 
-  power(impulse) {
-    this.pos[0] += impulse[0];
-    this.pos[1] += impulse[1];
+  power(move) {
+    this.vel[0] += move[0];
+    this.vel[1] += move[1];
   }
 }
 

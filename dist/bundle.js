@@ -83,7 +83,7 @@ var Game = function () {
     _classCallCheck(this, Game);
 
     this.circles = [];
-    this.userCircle = [new UserCircle({ game: this })];
+    this.userCircles = [new UserCircle({ game: this })];
     this.addCircles();
   }
 
@@ -105,7 +105,7 @@ var Game = function () {
   }, {
     key: 'allObjects',
     value: function allObjects() {
-      return [].concat(this.circles, this.userCircle);
+      return [].concat(this.circles, this.userCircles);
     }
   }, {
     key: 'draw',
@@ -136,7 +136,7 @@ var Game = function () {
       if (object instanceof Circle) {
         this.circles.splice(this.circles.indexOf(object), 1);
       } else if (object instanceof UserCircle) {
-        this.userCircle.splice(this.userCircle.indexOf(object), 1);
+        this.userCircles.splice(this.userCircles.indexOf(object), 1);
       }
     }
   }, {
@@ -147,10 +147,11 @@ var Game = function () {
         for (var j = 0; j < allObjects.length; j++) {
           if (i === j) {
             continue;
-          } else {
-            if (allObjects[i].isCollidedWith(allObjects[j])) {
-              allObjects[i].collideWith(allObjects[j]);
-            }
+          }
+
+          if (allObjects[i].isCollidedWith(allObjects[j])) {
+            var collision = allObjects[i].collideWith(allObjects[j]);
+            if (collision) return;
           }
         }
       }
@@ -298,8 +299,10 @@ var MovingObject = function () {
       var bigCircle = this.radius >= otherObject.radius ? this : otherObject;
 
       this.game.remove(smallCircle);
-      bigCircle.vel = [bigCircle.vel[0] * .85, bigCircle.vel[1] * .85];
+      bigCircle.vel = [bigCircle.vel[0] * .9, bigCircle.vel[1] * .9];
       bigCircle.radius = Math.sqrt(Math.pow(smallCircle.radius, 2) + Math.pow(bigCircle.radius, 2));
+
+      return true;
     }
   }, {
     key: 'isCollidedWith',
@@ -352,6 +355,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var UserCircle = __webpack_require__(5);
+var global = __webpack_require__(8);
 
 var GameView = function () {
   function GameView(game, ctx) {
@@ -362,11 +366,16 @@ var GameView = function () {
   }
 
   _createClass(GameView, [{
-    key: "start",
+    key: 'start',
     value: function start() {
       var _this = this;
 
       this.bindKeyHandlers();
+
+      window.setInterval(function () {
+        _this.game.userCircles[0].vel[0] *= .95;
+        _this.game.userCircles[0].vel[1] *= .95;
+      }, 20);
       window.setInterval(function () {
         return _this.game.step();
       }, 20);
@@ -375,14 +384,13 @@ var GameView = function () {
       }, 20);
     }
   }, {
-    key: "bindKeyHandlers",
+    key: 'bindKeyHandlers',
     value: function bindKeyHandlers() {
-      var userCircle = this.game.userCircle;
-
-      Object.keys(GameView.KEYS).forEach(function (el) {
-        debugger;
-        key(el, function () {
-          userCircle.power(GameView.KEYS[el]);
+      var userCircle = this.game.userCircles[0];
+      Object.keys(GameView.KEYS).forEach(function (k) {
+        var move = GameView.KEYS[k];
+        key(k, function () {
+          userCircle.power(move);
         });
       });
     }
@@ -392,10 +400,10 @@ var GameView = function () {
 }();
 
 GameView.KEYS = {
-  "w": [0, 1],
-  "a": [-1, 0],
-  "s": [0, -1],
-  "d": [1, 0]
+  "w": [0, -.9],
+  "a": [-.9, 0],
+  "s": [0, .9],
+  "d": [.9, 0]
 };
 
 module.exports = GameView;
@@ -442,9 +450,9 @@ var UserCircle = function (_MovingObject) {
 
   _createClass(UserCircle, [{
     key: 'power',
-    value: function power(impulse) {
-      this.pos[0] += impulse[0];
-      this.pos[1] += impulse[1];
+    value: function power(move) {
+      this.vel[0] += move[0];
+      this.vel[1] += move[1];
     }
   }]);
 
@@ -454,6 +462,26 @@ var UserCircle = function (_MovingObject) {
 UserCircle.RADIUS = 10;
 
 module.exports = UserCircle;
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = {
+  KEY_ESC: 27,
+  KEY_ENTER: 13,
+  KEY_LEFT: 37,
+  KEY_UP: 38,
+  KEY_RIGHT: 39,
+  KEY_DOWN: 40,
+  KEY_A: 65,
+  KEY_W: 87,
+  KEY_D: 68,
+  KEY_S: 83
+};
 
 /***/ })
 /******/ ]);

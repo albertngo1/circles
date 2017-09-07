@@ -6,7 +6,7 @@ class Game {
 
   constructor() {
     this.circles = [];
-    this.userCircle = [new UserCircle({game: this})];
+    this.userCircles = [new UserCircle({game: this})];
     this.addCircles();
   }
 
@@ -24,7 +24,7 @@ class Game {
   }
 
   allObjects() {
-     return [].concat(this.circles, this.userCircle);
+     return [].concat(this.circles, this.userCircles);
   }
 
   draw(ctx) {
@@ -56,7 +56,7 @@ class Game {
     if (object instanceof Circle) {
       this.circles.splice(this.circles.indexOf(object), 1);
     } else if (object instanceof UserCircle) {
-      this.userCircle.splice(this.userCircle.indexOf(object), 1);
+      this.userCircles.splice(this.userCircles.indexOf(object), 1);
     }
   }
 
@@ -66,11 +66,11 @@ class Game {
       for (let j=0; j < allObjects.length; j++) {
         if (i === j) {
           continue;
-        } else {
-          if (allObjects[i].isCollidedWith(allObjects[j])) {
-            allObjects[i].collideWith(allObjects[j]);
-          }
+        }
 
+        if (allObjects[i].isCollidedWith(allObjects[j])) {
+          let collision = allObjects[i].collideWith(allObjects[j]);
+          if (collision) return;
         }
       }
     }
