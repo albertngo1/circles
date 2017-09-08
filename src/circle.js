@@ -8,7 +8,7 @@ const randomColor = () => {
 }
 
 const randomRadius = () => {
-  return Math.floor(Math.random() * (30  - 3) + 3);
+  return Math.floor(Math.random() * (15  - 3) + 3);
 }
 
 

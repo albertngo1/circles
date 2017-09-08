@@ -180,7 +180,7 @@ var Game = function () {
 
 Game.DIM_X = window.innerWidth;
 Game.DIM_Y = window.innerHeight;
-Game.NUM_CIRCLES = 100;
+Game.NUM_CIRCLES = 5;
 
 module.exports = Game;
 
@@ -193,6 +193,7 @@ module.exports = Game;
 
 var Game = __webpack_require__(0);
 var GameView = __webpack_require__(5);
+var Camera = __webpack_require__(9);
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -203,7 +204,10 @@ document.addEventListener("DOMContentLoaded", function () {
   canvas.height = Game.DIM_Y;
 
   var game = new Game();
-  new GameView(game, ctx).start();
+
+  var camera = new Camera(0, 0, 100, 100, canvas.width, canvas.height);
+
+  new GameView(game, ctx, camera).start();
 });
 
 /***/ }),
@@ -226,7 +230,7 @@ var randomColor = function randomColor() {
 };
 
 var randomRadius = function randomRadius() {
-  return Math.floor(Math.random() * (30 - 3) + 3);
+  return Math.floor(Math.random() * (15 - 3) + 3);
 };
 
 var Circle = function (_MovingObject) {
@@ -357,21 +361,67 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var UserCircle = __webpack_require__(5);
-var global = __webpack_require__(8);
+var Camera = __webpack_require__(9);
+
+var GLOBAL = {
+  KEY_ESC: 27,
+  KEY_ENTER: 13,
+  KEY_LEFT: 37,
+  KEY_UP: 38,
+  KEY_RIGHT: 39,
+  KEY_DOWN: 40,
+  KEY_A: 65,
+  KEY_W: 87,
+  KEY_D: 68,
+  KEY_S: 83
+};
+var KEYS = {
+  up: false,
+  left: false,
+  right: false,
+  down: false,
+  w: false,
+  a: false,
+  s: false,
+  d: false
+};
+
+window.onkeydown = function (e) {
+  var keyPress = e.keyCode;
+  e.preventDefault();
+
+  if (keyPress === GLOBAL.KEY_A) {
+    KEYS.a = true;
+  }
+  if (keyPress === GLOBAL.KEY_S) KEYS.s = true;
+  if (keyPress === GLOBAL.KEY_W) KEYS.w = true;
+  if (keyPress === GLOBAL.KEY_D) KEYS.d = true;
+};
+
+window.onkeyup = function (e) {
+  var keyPress = e.keyCode;
+  e.preventDefault();
+
+  if (keyPress === GLOBAL.KEY_A) KEYS.a = false;
+  if (keyPress === GLOBAL.KEY_S) KEYS.s = false;
+  if (keyPress === GLOBAL.KEY_W) KEYS.w = false;
+  if (keyPress === GLOBAL.KEY_D) KEYS.d = false;
+};
 
 var GameView = function () {
-  function GameView(game, ctx) {
+  function GameView(game, ctx, camera) {
     _classCallCheck(this, GameView);
 
     this.game = game;
     this.ctx = ctx;
     this.lastTime = 0;
+
+    this.camera = camera;
   }
 
   _createClass(GameView, [{
     key: 'start',
     value: function start() {
-      this.bindKeyHandlers();
       this.lastTime = 0;
       requestAnimationFrame(this.animate.bind(this));
     }
@@ -380,9 +430,9 @@ var GameView = function () {
     value: function animate(time) {
       var delta = time - this.lastTime;
 
-      this.game.userCircles[0].vel[0] *= .95;
-      this.game.userCircles[0].vel[1] *= .95;
-
+      this.handleInput();
+      // this.camera.update();
+      // this.camera.follow(this.game.userCircles[0], 100, 100);
       this.game.step(delta);
       this.game.draw(this.ctx);
       this.lastTime = time;
@@ -390,27 +440,29 @@ var GameView = function () {
       requestAnimationFrame(this.animate.bind(this));
     }
   }, {
-    key: 'bindKeyHandlers',
-    value: function bindKeyHandlers() {
+    key: 'handleInput',
+    value: function handleInput() {
       var userCircle = this.game.userCircles[0];
-      Object.keys(GameView.KEYS).forEach(function (k) {
-        var move = GameView.KEYS[k];
-        key(k, function () {
-          userCircle.power(move);
-        });
-      });
+      userCircle.vel[0] *= .9;
+      userCircle.vel[1] *= .9;
+      debugger;
+      if (KEYS.w) {
+        userCircle.power([0, -.9]);
+      }
+      if (KEYS.s) {
+        userCircle.power([0, .9]);
+      }
+      if (KEYS.a) {
+        userCircle.power([-.9, 0]);
+      }
+      if (KEYS.d) {
+        userCircle.power([.9, 0]);
+      }
     }
   }]);
 
   return GameView;
 }();
-
-GameView.KEYS = {
-  "w": [0, -1],
-  "a": [-1, 0],
-  "s": [0, 1],
-  "d": [1, 0]
-};
 
 module.exports = GameView;
 
@@ -470,24 +522,146 @@ UserCircle.RADIUS = 10;
 module.exports = UserCircle;
 
 /***/ }),
-/* 8 */
+/* 8 */,
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-module.exports = {
-  KEY_ESC: 27,
-  KEY_ENTER: 13,
-  KEY_LEFT: 37,
-  KEY_UP: 38,
-  KEY_RIGHT: 39,
-  KEY_DOWN: 40,
-  KEY_A: 65,
-  KEY_W: 87,
-  KEY_D: 68,
-  KEY_S: 83
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Rectangle = __webpack_require__(10);
+
+var AXIS = {
+  NONE: "none",
+  HORIZONTAL: "horizontal",
+  VERTICAL: "vertical",
+  BOTH: "both"
 };
+
+var Camera = function () {
+  function Camera(xView, yView, canvasWidth, canvasHeight, worldWidth, worldHeight) {
+    _classCallCheck(this, Camera);
+
+    this.xView = xView || 0;
+    this.yView = yView || 0;
+    this.xDeadZone = 0;
+    this.yDeadZone = 0;
+    this.wView = canvasWidth;
+    this.hView = canvasHeight;
+
+    this.axis = AXIS.BOTH;
+    this.followed = null;
+
+    this.viewportRect = new Rectangle(this.xView, this.yView, this.wView, this.hView);
+
+    this.worldRect = new Rectangle(0, 0, worldWidth, worldHeight);
+  }
+
+  _createClass(Camera, [{
+    key: "follow",
+    value: function follow(gameObject, xDeadZone, yDeadZone) {
+      this.followed = gameObject;
+      this.xDeadZone = xDeadZone;
+      this.yDeadZone = yDeadZone;
+    }
+  }, {
+    key: "update",
+    value: function update() {
+      if (this.followed != null) {
+        if (this.axis == AXIS.HORIZONTAL || this.axis == AXIS.BOTH) {
+
+          if (this.followed.x - this.xView + this.xDeadZone > this.wView) {
+            this.xView = this.followed.x - (this.wView - this.xDeadZone);
+          } else if (this.followed.x - this.xDeadZone < this.xView) {
+            this.xView = this.followed.x - this.xDeadZone;
+          }
+        }
+
+        if (this.axis == AXIS.VERTICAL || this.axis == AXIS.BOTH) {
+          if (this.followed.y - this.yView + this.yDeadZone > this.hView) {
+            this.yView = this.followed.y - (this.hView - this.yDeadZone);
+          } else if (this.followed.y - this.yDeadZone < this.yView) {
+            this.yView = this.followed.y - this.yDeadZone;
+          }
+        }
+      }
+
+      this.viewportRect.set(this.xView, this.yView);
+
+      if (!this.viewportRect.within(this.worldRect)) {
+        if (this.viewportRect.left < this.worldRect.left) {
+          this.xView = this.worldRect.left;
+        }
+        if (this.viewportRect.top < this.worldRect.top) {
+          this.yView = this.worldRect.top;
+        }
+        if (this.viewportRect.right > this.worldRect.right) {
+          this.xView = this.worldRect.right - this.wView;
+        }
+        if (this.viewportRect.bottom > this.worldRect.bottom) {
+          this.yView = this.worldRect.bottom - this.hView;
+        }
+      }
+    }
+  }]);
+
+  return Camera;
+}();
+
+module.exports = Camera;
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Rectangle = function () {
+  function Rectangle(left, top, width, height) {
+    _classCallCheck(this, Rectangle);
+
+    this.left = left || 0;
+    this.top = top || 0;
+    this.width = width || 0;
+    this.height = height || 0;
+    this.right = this.left + this.width;
+    this.bottom = this.top + this.height;
+  }
+
+  _createClass(Rectangle, [{
+    key: "set",
+    value: function set(left, top, width, height) {
+      this.left = top;
+      this.width = width || this.width;
+      this.height = height || this.height;
+      this.right = this.left + this.width;
+      this.bottom = this.top + this.height;
+    }
+  }, {
+    key: "within",
+    value: function within(r) {
+      return r.left <= this.left && r.top <= this.top && r.right >= this.right && r.bottom >= this.bottom;
+    }
+  }, {
+    key: "overlaps",
+    value: function overlaps(r) {
+      return this.left < r.right && r.left < this.right && r.bottom > this.top && r.top < this.bottom;
+    }
+  }]);
+
+  return Rectangle;
+}();
+
+module.exports = Rectangle;
 
 /***/ })
 /******/ ]);

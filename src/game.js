@@ -97,7 +97,7 @@ class Game {
 
 Game.DIM_X = window.innerWidth;
 Game.DIM_Y = window.innerHeight;
-Game.NUM_CIRCLES = 100;
+Game.NUM_CIRCLES = 5;
 
 
 
