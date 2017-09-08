@@ -31,8 +31,8 @@ class UserCircle extends MovingObject {
     ctx.strokeStyle = "black";
     ctx.stroke();
     ctx.fill();
-    ctx.fillStyle = "white";
-    ctx.font = "5px Arial";
+    ctx.fillStyle = "black";
+    ctx.font = `${this.radius * .7}px Arial`;
     ctx.textBaseline = "middle"
     ctx.textAlign = "center";
     ctx.fillText("Player 1", this.pos[0], this.pos[1]);
