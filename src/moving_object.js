@@ -48,6 +48,10 @@ class MovingObject {
      }
   }
 
+  relocate() {
+    this.pos = this.game.randomPosition();
+  }
+
 
 }
 

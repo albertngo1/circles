@@ -2,12 +2,19 @@ const Circle = require('./circle');
 const Util = require('./util');
 const UserCircle = require('./user_circle');
 
+
+const randomRadius = () => {
+  return Math.floor(Math.random() * (15  - 3) + 3);
+}
+
 class Game {
 
   constructor() {
     this.circles = [];
     this.start = false;
     this.userCircles = [new UserCircle({game: this})];
+    this.radMult = 1;
+    this.velMult = 1;
     this.addCircles();
 
     this.score = 0;
@@ -16,7 +23,16 @@ class Game {
   addCircles() {
 
     for (let i = 1; i <= Game.NUM_CIRCLES; i++) {
-      this.circles.push(new Circle({pos: this.randomPosition(), game: this, vel: Util.randomVec(0.1)}));
+      this.circles.push(new Circle({pos: this.randomPosition(), game: this, radius: randomRadius(),  vel: Util.randomVec(0.1)}));
+    }
+  }
+
+  addMoreCircles() {
+    const allObjects = this.allObjects();
+    this.radMult = this.userCircles[0]*1.2;
+    this.velMult *= 1.5;
+    while (this.circles.length <= 70) {
+      this.circles.push(new Circle({pos: this.randomPosition(), game: this, radius: randomRadius()*this.radMult, vel: Util.randomVec(0.1, this.velMult)}));
     }
   }
 
@@ -48,8 +64,23 @@ class Game {
 
 
   step(delta) {
+    const allObjects = this.allObjects();
     this.moveObjects(delta);
     this.checkCollisions();
+    if (this.circles.length === 0) {
+      window.location.reload();
+    }
+
+    if (this.userCircles.length === 0) {
+      window.location.reload();
+    }
+    if (this.userCircles[0].radius > 50) {
+      this.userCircles[0].radius = 10;
+    }
+
+    if (allObjects.length < 40) {
+      this.addMoreCircles();
+    }
   }
 
 

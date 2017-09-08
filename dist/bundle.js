@@ -78,6 +78,10 @@ var Circle = __webpack_require__(5);
 var Util = __webpack_require__(6);
 var UserCircle = __webpack_require__(7);
 
+var randomRadius = function randomRadius() {
+  return Math.floor(Math.random() * (15 - 3) + 3);
+};
+
 var Game = function () {
   function Game() {
     _classCallCheck(this, Game);
@@ -85,6 +89,8 @@ var Game = function () {
     this.circles = [];
     this.start = false;
     this.userCircles = [new UserCircle({ game: this })];
+    this.radMult = 1;
+    this.velMult = 1;
     this.addCircles();
 
     this.score = 0;
@@ -95,7 +101,17 @@ var Game = function () {
     value: function addCircles() {
 
       for (var i = 1; i <= Game.NUM_CIRCLES; i++) {
-        this.circles.push(new Circle({ pos: this.randomPosition(), game: this, vel: Util.randomVec(0.1) }));
+        this.circles.push(new Circle({ pos: this.randomPosition(), game: this, radius: randomRadius(), vel: Util.randomVec(0.1) }));
+      }
+    }
+  }, {
+    key: 'addMoreCircles',
+    value: function addMoreCircles() {
+      var allObjects = this.allObjects();
+      this.radMult = this.userCircles[0] * 1.2;
+      this.velMult *= 1.5;
+      while (this.circles.length <= 70) {
+        this.circles.push(new Circle({ pos: this.randomPosition(), game: this, radius: randomRadius() * this.radMult, vel: Util.randomVec(0.1, this.velMult) }));
       }
     }
   }, {
@@ -131,8 +147,23 @@ var Game = function () {
   }, {
     key: 'step',
     value: function step(delta) {
+      var allObjects = this.allObjects();
       this.moveObjects(delta);
       this.checkCollisions();
+      if (this.circles.length === 0) {
+        window.location.reload();
+      }
+
+      if (this.userCircles.length === 0) {
+        window.location.reload();
+      }
+      if (this.userCircles[0].radius > 50) {
+        this.userCircles[0].radius = 10;
+      }
+
+      if (allObjects.length < 40) {
+        this.addMoreCircles();
+      }
     }
   }, {
     key: 'moveObjects',
@@ -264,6 +295,11 @@ var MovingObject = function () {
         return false;
       }
     }
+  }, {
+    key: 'relocate',
+    value: function relocate() {
+      this.pos = this.game.randomPosition();
+    }
   }]);
 
   return MovingObject;
@@ -369,14 +405,6 @@ var GameView = function () {
       this.game.step(delta);
       this.game.draw(this.ctx);
       this.lastTime = time;
-
-      if (this.game.circles.length === 0) {
-        window.location.reload();
-      }
-
-      if (this.game.userCircles.length === 0) {
-        window.location.reload();
-      }
 
       if (KEYS.enter) {
         console.log(KEYS.enter);
@@ -574,7 +602,7 @@ var Circle = function (_MovingObject) {
     var _this = _possibleConstructorReturn(this, (Circle.__proto__ || Object.getPrototypeOf(Circle)).call(this, options));
 
     _this.color = randomColor();
-    _this.radius = randomRadius();
+    options.radius = options.radius || randomRadius();
     options.pos = options.pos || options.game.randomPosition();
     options.vel = options.vel || Util.randomVec(0.1);;
 
@@ -595,8 +623,10 @@ module.exports = Circle;
 
 var Util = {
   randomVec: function randomVec(length) {
+    var vecMultiplier = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+
     var deg = 2 * Math.PI * Math.random();
-    return Util.scale([Math.sin(deg), Math.cos(deg)], length);
+    return Util.scale([Math.sin(deg) * vecMultiplier, Math.cos(deg) * vecMultiplier], length);
   },
   scale: function scale(vec, m) {
     return [vec[0] * m, vec[1] * m];

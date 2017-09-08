@@ -85,14 +85,6 @@ class GameView {
     this.game.draw(this.ctx);
     this.lastTime = time;
 
-    if (this.game.circles.length === 0) {
-      window.location.reload();
-    }
-
-    if (this.game.userCircles.length === 0) {
-      window.location.reload();
-    }
-
     if (KEYS.enter) {
       console.log(KEYS.enter);
     } else {

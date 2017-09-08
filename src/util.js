@@ -2,9 +2,9 @@ const Util = {
 
 
 
-  randomVec(length) {
+  randomVec(length, vecMultiplier = 1) {
     const deg = 2 * Math.PI * Math.random();
-    return Util.scale([Math.sin(deg), Math.cos(deg)], length)
+    return Util.scale([Math.sin(deg) * vecMultiplier, Math.cos(deg) * vecMultiplier], length);
   },
 
   scale(vec, m) {

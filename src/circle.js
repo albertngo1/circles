@@ -18,7 +18,7 @@ class Circle extends MovingObject {
   constructor(options = {}) {
     super(options);
     this.color = randomColor();
-    this.radius = randomRadius();
+    options.radius = options.radius || randomRadius();
     options.pos = options.pos || options.game.randomPosition();
     options.vel = options.vel || Util.randomVec(0.1);;
 
