@@ -11,7 +11,8 @@ const GLOBAL = {
   KEY_A: 65,
   KEY_W: 87,
   KEY_D: 68,
-  KEY_S: 83
+  KEY_S: 83,
+  KEY_P: 80
 }
 const KEYS = {
   up: false,
@@ -21,20 +22,26 @@ const KEYS = {
   w: false,
   a: false,
   s: false,
-  d: false
+  d: false,
+  enter: false
 }
 
 window.onkeydown = (e) => {
   const keyPress = e.keyCode;
   e.preventDefault();
 
-  if (keyPress === GLOBAL.KEY_A) {
-    KEYS.a = true;
-  }
+  if (keyPress === GLOBAL.KEY_A) KEYS.a = true;
   if (keyPress === GLOBAL.KEY_S) KEYS.s = true;
   if (keyPress === GLOBAL.KEY_W) KEYS.w = true;
   if (keyPress === GLOBAL.KEY_D) KEYS.d = true;
 
+}
+
+window.onkeypress = (e) => {
+  const keyPress = e.keyCode;
+  e.preventDefault();
+
+  if (keyPress === GLOBAL.KEY_ENTER) GameView.togglePause();
 }
 
 window.onkeyup = (e) => {
@@ -55,6 +62,8 @@ class GameView {
     this.game = game;
     this.ctx = ctx;
     this.lastTime = 0;
+    this.score = 0;
+    this.paused = false;
 
     this.camera = camera;
 
@@ -64,6 +73,7 @@ class GameView {
     this.lastTime = 0;
     requestAnimationFrame(this.animate.bind(this));
   }
+
 
   animate(time) {
     let delta = time - this.lastTime;
@@ -75,7 +85,31 @@ class GameView {
     this.game.draw(this.ctx);
     this.lastTime = time;
 
-    requestAnimationFrame(this.animate.bind(this));
+    if (this.game.circles.length === 0) {
+      window.location.reload();
+    }
+
+    if (this.game.userCircles.length === 0) {
+      window.location.reload();
+    }
+
+    if (KEYS.enter) {
+      console.log(KEYS.enter);
+    } else {
+      requestAnimationFrame(this.animate.bind(this));
+    }
+
+  }
+
+  togglePause() {
+    if (!this.paused) {
+      cancelAnimationFrame(this.animate.bind(this));
+      console.log(this.paused);
+      this.paused = true;
+    } else {
+      this.animate(time);
+      this.paused = false;
+    }
   }
 
 
@@ -84,18 +118,17 @@ class GameView {
     const userCircle = this.game.userCircles[0];
     userCircle.vel[0] *= .9;
     userCircle.vel[1] *= .9;
-    debugger
     if (KEYS.w) {
-      userCircle.power([0, -.9]);
+      userCircle.power([0, -.8]);
     }
     if (KEYS.s) {
-      userCircle.power([0, .9]);
+      userCircle.power([0, .8]);
     }
     if (KEYS.a) {
-      userCircle.power([-.9, 0]);
+      userCircle.power([-.8, 0]);
     }
     if (KEYS.d) {
-      userCircle.power([.9, 0]);
+      userCircle.power([.8, 0]);
     }
 
 

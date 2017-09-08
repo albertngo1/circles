@@ -11,7 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
   canvas.width = Game.DIM_X;
   canvas.height = Game.DIM_Y;
 
-
   const game = new Game();
 
   const camera = new Camera(0, 0,

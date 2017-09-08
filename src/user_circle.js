@@ -23,6 +23,20 @@ class UserCircle extends MovingObject {
     this.vel[0] += move[0];
     this.vel[1] += move[1];
   }
+
+  draw(ctx) {
+    ctx.fillStyle = this.color;
+    ctx.beginPath();
+    ctx.arc(Math.floor(this.pos[0]), Math.floor(this.pos[1]), this.radius, 0, 2 * Math.PI, false);
+    ctx.strokeStyle = "black";
+    ctx.stroke();
+    ctx.fill();
+    ctx.fillStyle = "white";
+    ctx.font = "5px Arial";
+    ctx.textBaseline = "middle"
+    ctx.textAlign = "center";
+    ctx.fillText("Player 1", this.pos[0], this.pos[1]);
+  }
 }
 
 UserCircle.RADIUS = 10;

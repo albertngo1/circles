@@ -6,8 +6,11 @@ class Game {
 
   constructor() {
     this.circles = [];
+    this.start = false;
     this.userCircles = [new UserCircle({game: this})];
     this.addCircles();
+
+    this.score = 0;
   }
 
   addCircles() {
@@ -33,6 +36,14 @@ class Game {
     allObjects.forEach( el => {
       el.draw(ctx);
     })
+    this.drawScore(ctx);
+  }
+
+  drawScore(ctx) {
+    ctx.font = "20px Impact";
+    ctx.fillStyle = "rgb(17, 17, 17)";
+    ctx.textBaseline = "top"
+    ctx.fillText("Score: "+this.score, 1200, 0);
   }
 
 
@@ -70,6 +81,10 @@ class Game {
 
         if (allObjects[i].isCollidedWith(allObjects[j])) {
           let collision = allObjects[i].collideWith(allObjects[j]);
+          if (this.userCircles.includes(allObjects[i]) ||
+        this.userCircles.includes(allObjects[j])) {
+            this.score += 100;
+          }
           if (collision) return;
         }
       }
@@ -97,7 +112,7 @@ class Game {
 
 Game.DIM_X = window.innerWidth;
 Game.DIM_Y = window.innerHeight;
-Game.NUM_CIRCLES = 5;
+Game.NUM_CIRCLES = 200;
 
 
 

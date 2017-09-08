@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/dist";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 4);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -74,8 +74,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Circle = __webpack_require__(2);
-var Util = __webpack_require__(4);
+var Circle = __webpack_require__(5);
+var Util = __webpack_require__(6);
 var UserCircle = __webpack_require__(7);
 
 var Game = function () {
@@ -83,8 +83,11 @@ var Game = function () {
     _classCallCheck(this, Game);
 
     this.circles = [];
+    this.start = false;
     this.userCircles = [new UserCircle({ game: this })];
     this.addCircles();
+
+    this.score = 0;
   }
 
   _createClass(Game, [{
@@ -115,6 +118,15 @@ var Game = function () {
       allObjects.forEach(function (el) {
         el.draw(ctx);
       });
+      this.drawScore(ctx);
+    }
+  }, {
+    key: 'drawScore',
+    value: function drawScore(ctx) {
+      ctx.font = "20px Impact";
+      ctx.fillStyle = "rgb(17, 17, 17)";
+      ctx.textBaseline = "top";
+      ctx.fillText("Score: " + this.score, 1200, 0);
     }
   }, {
     key: 'step',
@@ -151,6 +163,9 @@ var Game = function () {
 
           if (allObjects[i].isCollidedWith(allObjects[j])) {
             var collision = allObjects[i].collideWith(allObjects[j]);
+            if (this.userCircles.includes(allObjects[i]) || this.userCircles.includes(allObjects[j])) {
+              this.score += 100;
+            }
             if (collision) return;
           }
         }
@@ -180,84 +195,12 @@ var Game = function () {
 
 Game.DIM_X = window.innerWidth;
 Game.DIM_Y = window.innerHeight;
-Game.NUM_CIRCLES = 5;
+Game.NUM_CIRCLES = 200;
 
 module.exports = Game;
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var Game = __webpack_require__(0);
-var GameView = __webpack_require__(5);
-var Camera = __webpack_require__(9);
-
-document.addEventListener("DOMContentLoaded", function () {
-
-  var canvas = document.getElementById("canvas");
-  var ctx = canvas.getContext('2d');
-
-  canvas.width = Game.DIM_X;
-  canvas.height = Game.DIM_Y;
-
-  var game = new Game();
-
-  var camera = new Camera(0, 0, 100, 100, canvas.width, canvas.height);
-
-  new GameView(game, ctx, camera).start();
-});
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var MovingObject = __webpack_require__(3);
-
-var randomColor = function randomColor() {
-  return 'rgb(' + Math.floor(Math.random() * 255) + ',\n   ' + Math.floor(Math.random() * 255) + ',\n    ' + Math.floor(Math.random() * 255) + ')';
-};
-
-var randomRadius = function randomRadius() {
-  return Math.floor(Math.random() * (15 - 3) + 3);
-};
-
-var Circle = function (_MovingObject) {
-  _inherits(Circle, _MovingObject);
-
-  function Circle() {
-    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-    _classCallCheck(this, Circle);
-
-    var _this = _possibleConstructorReturn(this, (Circle.__proto__ || Object.getPrototypeOf(Circle)).call(this, options));
-
-    _this.color = randomColor();
-    _this.radius = randomRadius();
-    options.pos = options.pos || options.game.randomPosition();
-    options.vel = options.vel || Util.randomVec(0.1);;
-
-    return _this;
-  }
-
-  return Circle;
-}(MovingObject);
-
-module.exports = Circle;
-
-/***/ }),
-/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -331,26 +274,7 @@ var NORMAL_FRAME_TIME_DELTA = 1000 / 60;
 module.exports = MovingObject;
 
 /***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var Util = {
-  randomVec: function randomVec(length) {
-    var deg = 2 * Math.PI * Math.random();
-    return Util.scale([Math.sin(deg), Math.cos(deg)], length);
-  },
-  scale: function scale(vec, m) {
-    return [vec[0] * m, vec[1] * m];
-  }
-};
-
-module.exports = Util;
-
-/***/ }),
-/* 5 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -360,8 +284,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var UserCircle = __webpack_require__(5);
-var Camera = __webpack_require__(9);
+var UserCircle = __webpack_require__(2);
+var Camera = __webpack_require__(3);
 
 var GLOBAL = {
   KEY_ESC: 27,
@@ -373,7 +297,8 @@ var GLOBAL = {
   KEY_A: 65,
   KEY_W: 87,
   KEY_D: 68,
-  KEY_S: 83
+  KEY_S: 83,
+  KEY_P: 80
 };
 var KEYS = {
   up: false,
@@ -383,19 +308,25 @@ var KEYS = {
   w: false,
   a: false,
   s: false,
-  d: false
+  d: false,
+  enter: false
 };
 
 window.onkeydown = function (e) {
   var keyPress = e.keyCode;
   e.preventDefault();
 
-  if (keyPress === GLOBAL.KEY_A) {
-    KEYS.a = true;
-  }
+  if (keyPress === GLOBAL.KEY_A) KEYS.a = true;
   if (keyPress === GLOBAL.KEY_S) KEYS.s = true;
   if (keyPress === GLOBAL.KEY_W) KEYS.w = true;
   if (keyPress === GLOBAL.KEY_D) KEYS.d = true;
+};
+
+window.onkeypress = function (e) {
+  var keyPress = e.keyCode;
+  e.preventDefault();
+
+  if (keyPress === GLOBAL.KEY_ENTER) GameView.togglePause();
 };
 
 window.onkeyup = function (e) {
@@ -415,6 +346,8 @@ var GameView = function () {
     this.game = game;
     this.ctx = ctx;
     this.lastTime = 0;
+    this.score = 0;
+    this.paused = false;
 
     this.camera = camera;
   }
@@ -437,7 +370,31 @@ var GameView = function () {
       this.game.draw(this.ctx);
       this.lastTime = time;
 
-      requestAnimationFrame(this.animate.bind(this));
+      if (this.game.circles.length === 0) {
+        window.location.reload();
+      }
+
+      if (this.game.userCircles.length === 0) {
+        window.location.reload();
+      }
+
+      if (KEYS.enter) {
+        console.log(KEYS.enter);
+      } else {
+        requestAnimationFrame(this.animate.bind(this));
+      }
+    }
+  }, {
+    key: 'togglePause',
+    value: function togglePause() {
+      if (!this.paused) {
+        cancelAnimationFrame(this.animate.bind(this));
+        console.log(this.paused);
+        this.paused = true;
+      } else {
+        this.animate(time);
+        this.paused = false;
+      }
     }
   }, {
     key: 'handleInput',
@@ -445,18 +402,17 @@ var GameView = function () {
       var userCircle = this.game.userCircles[0];
       userCircle.vel[0] *= .9;
       userCircle.vel[1] *= .9;
-      debugger;
       if (KEYS.w) {
-        userCircle.power([0, -.9]);
+        userCircle.power([0, -.8]);
       }
       if (KEYS.s) {
-        userCircle.power([0, .9]);
+        userCircle.power([0, .8]);
       }
       if (KEYS.a) {
-        userCircle.power([-.9, 0]);
+        userCircle.power([-.8, 0]);
       }
       if (KEYS.d) {
-        userCircle.power([.9, 0]);
+        userCircle.power([.8, 0]);
       }
     }
   }]);
@@ -467,8 +423,7 @@ var GameView = function () {
 module.exports = GameView;
 
 /***/ }),
-/* 6 */,
-/* 7 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -478,62 +433,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var MovingObject = __webpack_require__(3);
-
-var randomColor = function randomColor() {
-  return 'rgb(' + Math.floor(Math.random() * 255) + ',\n   ' + Math.floor(Math.random() * 255) + ',\n    ' + Math.floor(Math.random() * 255) + ')';
-};
-
-var UserCircle = function (_MovingObject) {
-  _inherits(UserCircle, _MovingObject);
-
-  function UserCircle() {
-    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-    _classCallCheck(this, UserCircle);
-
-    var _this = _possibleConstructorReturn(this, (UserCircle.__proto__ || Object.getPrototypeOf(UserCircle)).call(this, options));
-
-    _this.color = randomColor();
-    _this.radius = UserCircle.RADIUS;
-    _this.pos = [window.innerWidth / 2, window.innerHeight / 2];
-    _this.vel = [0, 0];
-
-    return _this;
-  }
-
-  _createClass(UserCircle, [{
-    key: 'power',
-    value: function power(move) {
-      this.vel[0] += move[0];
-      this.vel[1] += move[1];
-    }
-  }]);
-
-  return UserCircle;
-}(MovingObject);
-
-UserCircle.RADIUS = 10;
-
-module.exports = UserCircle;
-
-/***/ }),
-/* 8 */,
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Rectangle = __webpack_require__(10);
+var Rectangle = __webpack_require__(8);
 
 var AXIS = {
   NONE: "none",
@@ -615,7 +515,167 @@ var Camera = function () {
 module.exports = Camera;
 
 /***/ }),
-/* 10 */
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var Game = __webpack_require__(0);
+var GameView = __webpack_require__(2);
+var Camera = __webpack_require__(3);
+
+document.addEventListener("DOMContentLoaded", function () {
+
+  var canvas = document.getElementById("canvas");
+  var ctx = canvas.getContext('2d');
+
+  canvas.width = Game.DIM_X;
+  canvas.height = Game.DIM_Y;
+
+  var game = new Game();
+
+  var camera = new Camera(0, 0, 100, 100, canvas.width, canvas.height);
+
+  new GameView(game, ctx, camera).start();
+});
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var MovingObject = __webpack_require__(1);
+
+var randomColor = function randomColor() {
+  return 'rgb(' + Math.floor(Math.random() * 255) + ',\n   ' + Math.floor(Math.random() * 255) + ',\n    ' + Math.floor(Math.random() * 255) + ')';
+};
+
+var randomRadius = function randomRadius() {
+  return Math.floor(Math.random() * (15 - 3) + 3);
+};
+
+var Circle = function (_MovingObject) {
+  _inherits(Circle, _MovingObject);
+
+  function Circle() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    _classCallCheck(this, Circle);
+
+    var _this = _possibleConstructorReturn(this, (Circle.__proto__ || Object.getPrototypeOf(Circle)).call(this, options));
+
+    _this.color = randomColor();
+    _this.radius = randomRadius();
+    options.pos = options.pos || options.game.randomPosition();
+    options.vel = options.vel || Util.randomVec(0.1);;
+
+    return _this;
+  }
+
+  return Circle;
+}(MovingObject);
+
+module.exports = Circle;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var Util = {
+  randomVec: function randomVec(length) {
+    var deg = 2 * Math.PI * Math.random();
+    return Util.scale([Math.sin(deg), Math.cos(deg)], length);
+  },
+  scale: function scale(vec, m) {
+    return [vec[0] * m, vec[1] * m];
+  }
+};
+
+module.exports = Util;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var MovingObject = __webpack_require__(1);
+
+var randomColor = function randomColor() {
+  return "rgb(" + Math.floor(Math.random() * 255) + ",\n   " + Math.floor(Math.random() * 255) + ",\n    " + Math.floor(Math.random() * 255) + ")";
+};
+
+var UserCircle = function (_MovingObject) {
+  _inherits(UserCircle, _MovingObject);
+
+  function UserCircle() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    _classCallCheck(this, UserCircle);
+
+    var _this = _possibleConstructorReturn(this, (UserCircle.__proto__ || Object.getPrototypeOf(UserCircle)).call(this, options));
+
+    _this.color = randomColor();
+    _this.radius = UserCircle.RADIUS;
+    _this.pos = [window.innerWidth / 2, window.innerHeight / 2];
+    _this.vel = [0, 0];
+
+    return _this;
+  }
+
+  _createClass(UserCircle, [{
+    key: "power",
+    value: function power(move) {
+      this.vel[0] += move[0];
+      this.vel[1] += move[1];
+    }
+  }, {
+    key: "draw",
+    value: function draw(ctx) {
+      ctx.fillStyle = this.color;
+      ctx.beginPath();
+      ctx.arc(Math.floor(this.pos[0]), Math.floor(this.pos[1]), this.radius, 0, 2 * Math.PI, false);
+      ctx.strokeStyle = "black";
+      ctx.stroke();
+      ctx.fill();
+      ctx.fillStyle = "white";
+      ctx.font = "5px Arial";
+      ctx.textBaseline = "middle";
+      ctx.textAlign = "center";
+      ctx.fillText("Player 1", this.pos[0], this.pos[1]);
+    }
+  }]);
+
+  return UserCircle;
+}(MovingObject);
+
+UserCircle.RADIUS = 10;
+
+module.exports = UserCircle;
+
+/***/ }),
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
