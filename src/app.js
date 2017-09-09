@@ -16,5 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const camera = new Camera(0, 0,
     100, 100, canvas.width, canvas.height);
 
+
   new GameView(game, ctx, camera).start();
 })

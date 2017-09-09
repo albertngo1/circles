@@ -108,9 +108,9 @@ var Game = function () {
     key: 'addMoreCircles',
     value: function addMoreCircles() {
       var allObjects = this.allObjects();
-      this.radMult = this.userCircles[0] * 1.2;
+      this.radMult *= 1.05;
       this.velMult *= 1.5;
-      while (this.circles.length <= 70) {
+      while (this.circles.length <= Game.NUM_CIRCLES * .8) {
         this.circles.push(new Circle({ pos: this.randomPosition(), game: this, radius: randomRadius() * this.radMult, vel: Util.randomVec(0.1, this.velMult) }));
       }
     }
@@ -119,6 +119,12 @@ var Game = function () {
     value: function randomPosition() {
       var x = Game.DIM_X * Math.random();
       var y = Game.DIM_Y * Math.random();
+
+      while (x > Game.DIM_X / 2 - Game.BUFFER_ZONE && x < Game.DIM_X / 2 + Game.BUFFER_ZONE && y > Game.DIM_Y / 2 - Game.BUFFER_ZONE && y < Game.DIM_Y / 2 + Game.BUFFER_ZONE) {
+        x = Game.DIM_X * Math.random();
+        y = Game.DIM_Y * Math.random();
+      }
+
       return [x, y];
     }
   }, {
@@ -134,7 +140,23 @@ var Game = function () {
       allObjects.forEach(function (el) {
         el.draw(ctx);
       });
+      if (this.userCircles[0].radius > Game.BUFFER_ZONE * .8) {
+        this.drawWarning(ctx);
+      }
       this.drawScore(ctx);
+    }
+  }, {
+    key: 'drawWarning',
+    value: function drawWarning(ctx) {
+      var colors = ['rgb(224, 20, 20)', 'rgb(235, 255, 1)', '#f7ad06'];
+      var userCircle = this.userCircles[0];
+      ctx.font = "20px Impact";
+      ctx.fillStyle = '' + colors[Math.floor(Math.random() * colors.length)];
+      ctx.textBaseline = "top";
+      ctx.font = this.radius * .7 + 'px Calibri';
+      ctx.textBaseline = "middle";
+      ctx.textAlign = "center";
+      ctx.fillText('W A R N I N G.. ' + Math.floor(50 - userCircle.radius + 1), userCircle.pos[0], userCircle.pos[1] - userCircle.radius * 1.2);
     }
   }, {
     key: 'drawScore',
@@ -157,11 +179,11 @@ var Game = function () {
       if (this.userCircles.length === 0) {
         window.location.reload();
       }
-      if (this.userCircles[0].radius > 50) {
+      if (this.userCircles[0].radius > Game.RESET_RADIUS) {
         this.userCircles[0].radius = 10;
       }
 
-      if (allObjects.length < 40) {
+      if (allObjects.length < Game.NUM_CIRCLES * .4) {
         this.addMoreCircles();
       }
     }
@@ -195,7 +217,7 @@ var Game = function () {
           if (allObjects[i].isCollidedWith(allObjects[j])) {
             var collision = allObjects[i].collideWith(allObjects[j]);
             if (this.userCircles.includes(allObjects[i]) || this.userCircles.includes(allObjects[j])) {
-              this.score += 100;
+              this.score += Game.SCORE;
             }
             if (collision) return;
           }
@@ -226,7 +248,10 @@ var Game = function () {
 
 Game.DIM_X = window.innerWidth;
 Game.DIM_Y = window.innerHeight;
-Game.NUM_CIRCLES = 200;
+Game.NUM_CIRCLES = 100;
+Game.SCORE = 100;
+Game.RESET_RADIUS = 50;
+Game.BUFFER_ZONE = 50;
 
 module.exports = Game;
 
@@ -322,6 +347,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var UserCircle = __webpack_require__(2);
 var Camera = __webpack_require__(3);
+var Game = __webpack_require__(0);
 
 var GLOBAL = {
   KEY_ESC: 27,
@@ -384,6 +410,8 @@ var GameView = function () {
     this.lastTime = 0;
     this.score = 0;
     this.paused = false;
+    this.startGame = false;
+    this.startScreen = true;
 
     this.camera = camera;
   }
@@ -431,16 +459,16 @@ var GameView = function () {
       userCircle.vel[0] *= .9;
       userCircle.vel[1] *= .9;
       if (KEYS.w) {
-        userCircle.power([0, -.8]);
+        userCircle.power([0, -.5]);
       }
       if (KEYS.s) {
-        userCircle.power([0, .8]);
+        userCircle.power([0, .5]);
       }
       if (KEYS.a) {
-        userCircle.power([-.8, 0]);
+        userCircle.power([-.5, 0]);
       }
       if (KEYS.d) {
-        userCircle.power([.8, 0]);
+        userCircle.power([.5, 0]);
       }
     }
   }]);

@@ -1,5 +1,6 @@
 const UserCircle = require('./game_view.js');
 const Camera = require('./viewport/camera.js');
+const Game = require('./game.js');
 
 const GLOBAL = {
   KEY_ESC: 27,
@@ -64,6 +65,8 @@ class GameView {
     this.lastTime = 0;
     this.score = 0;
     this.paused = false;
+    this.startGame = false;
+    this.startScreen = true;
 
     this.camera = camera;
 
@@ -72,6 +75,7 @@ class GameView {
   start() {
     this.lastTime = 0;
     requestAnimationFrame(this.animate.bind(this));
+
   }
 
 
@@ -111,16 +115,16 @@ class GameView {
     userCircle.vel[0] *= .9;
     userCircle.vel[1] *= .9;
     if (KEYS.w) {
-      userCircle.power([0, -.8]);
+      userCircle.power([0, -.5]);
     }
     if (KEYS.s) {
-      userCircle.power([0, .8]);
+      userCircle.power([0, .5]);
     }
     if (KEYS.a) {
-      userCircle.power([-.8, 0]);
+      userCircle.power([-.5, 0]);
     }
     if (KEYS.d) {
-      userCircle.power([.8, 0]);
+      userCircle.power([.5, 0]);
     }
 
 

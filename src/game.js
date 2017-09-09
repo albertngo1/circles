@@ -29,9 +29,9 @@ class Game {
 
   addMoreCircles() {
     const allObjects = this.allObjects();
-    this.radMult = this.userCircles[0]*1.2;
+    this.radMult *= 1.05;
     this.velMult *= 1.5;
-    while (this.circles.length <= 70) {
+    while (this.circles.length <= Game.NUM_CIRCLES *.8) {
       this.circles.push(new Circle({pos: this.randomPosition(), game: this, radius: randomRadius()*this.radMult, vel: Util.randomVec(0.1, this.velMult)}));
     }
   }
@@ -39,6 +39,13 @@ class Game {
   randomPosition() {
     let x = Game.DIM_X * Math.random();
     let y = Game.DIM_Y * Math.random();
+
+    while ((x > Game.DIM_X / 2 - Game.BUFFER_ZONE && x < Game.DIM_X / 2 + Game.BUFFER_ZONE) &&
+    (y > Game.DIM_Y / 2 - Game.BUFFER_ZONE && y < Game.DIM_Y / 2 + Game.BUFFER_ZONE)  ) {
+      x = Game.DIM_X * Math.random();
+      y = Game.DIM_Y * Math.random();
+    }
+
     return [x, y];
   }
 
@@ -52,7 +59,22 @@ class Game {
     allObjects.forEach( el => {
       el.draw(ctx);
     })
+    if (this.userCircles[0].radius > Game.BUFFER_ZONE * .8) {
+      this.drawWarning(ctx);
+    }
     this.drawScore(ctx);
+  }
+
+  drawWarning(ctx) {
+    const colors = ['rgb(224, 20, 20)', 'rgb(235, 255, 1)','#f7ad06'];
+    const userCircle = this.userCircles[0];
+    ctx.font = "20px Impact";
+    ctx.fillStyle = `${colors[Math.floor(Math.random()*colors.length)]}`;
+    ctx.textBaseline = "top"
+    ctx.font = `${this.radius * .7}px Calibri`;
+    ctx.textBaseline = "middle"
+    ctx.textAlign = "center";
+    ctx.fillText(`W A R N I N G.. ${Math.floor(50-userCircle.radius+1)}`, userCircle.pos[0], userCircle.pos[1] - userCircle.radius*1.2);
   }
 
   drawScore(ctx) {
@@ -74,11 +96,11 @@ class Game {
     if (this.userCircles.length === 0) {
       window.location.reload();
     }
-    if (this.userCircles[0].radius > 50) {
+    if (this.userCircles[0].radius > Game.RESET_RADIUS) {
       this.userCircles[0].radius = 10;
     }
 
-    if (allObjects.length < 40) {
+    if (allObjects.length < Game.NUM_CIRCLES * .4) {
       this.addMoreCircles();
     }
   }
@@ -114,7 +136,7 @@ class Game {
           let collision = allObjects[i].collideWith(allObjects[j]);
           if (this.userCircles.includes(allObjects[i]) ||
         this.userCircles.includes(allObjects[j])) {
-            this.score += 100;
+            this.score += Game.SCORE;
           }
           if (collision) return;
         }
@@ -143,7 +165,10 @@ class Game {
 
 Game.DIM_X = window.innerWidth;
 Game.DIM_Y = window.innerHeight;
-Game.NUM_CIRCLES = 200;
+Game.NUM_CIRCLES = 100;
+Game.SCORE = 100;
+Game.RESET_RADIUS = 50;
+Game.BUFFER_ZONE = 50;
 
 
 
