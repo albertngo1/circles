@@ -15,7 +15,8 @@ class UserCircle extends MovingObject {
     this.color = randomColor();
     this.radius = UserCircle.RADIUS;
     this.pos = [window.innerWidth / 2, window.innerHeight / 2];
-    this.vel = [0, 0]
+    this.vel = [0, 0];
+    this.name = "Player 1";
 
   }
 
@@ -35,7 +36,7 @@ class UserCircle extends MovingObject {
     ctx.font = `${this.radius * .7}px Arial`;
     ctx.textBaseline = "middle"
     ctx.textAlign = "center";
-    ctx.fillText("Player 1", this.pos[0], this.pos[1]);
+    ctx.fillText(`${this.name}`, this.pos[0], this.pos[1]);
   }
 }
 

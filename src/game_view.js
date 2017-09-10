@@ -1,4 +1,4 @@
-const UserCircle = require('./game_view.js');
+const UserCircle = require('./user_circle.js');
 const Camera = require('./viewport/camera.js');
 const Game = require('./game.js');
 
@@ -29,7 +29,7 @@ const KEYS = {
 
 window.onkeydown = (e) => {
   const keyPress = e.keyCode;
-  e.preventDefault();
+  // e.preventDefault();
 
   if (keyPress === GLOBAL.KEY_A) KEYS.a = true;
   if (keyPress === GLOBAL.KEY_S) KEYS.s = true;
@@ -40,14 +40,14 @@ window.onkeydown = (e) => {
 
 window.onkeypress = (e) => {
   const keyPress = e.keyCode;
-  e.preventDefault();
+  // e.preventDefault();
 
   if (keyPress === GLOBAL.KEY_ENTER) GameView.togglePause();
 }
 
 window.onkeyup = (e) => {
   const keyPress = e.keyCode;
-  e.preventDefault();
+  // e.preventDefault();
 
   if (keyPress === GLOBAL.KEY_A) KEYS.a = false;
   if (keyPress === GLOBAL.KEY_S) KEYS.s = false;
@@ -68,8 +68,18 @@ class GameView {
     this.startGame = false;
     this.startScreen = true;
 
-    this.camera = camera;
+    // this.camera = camera;
 
+
+  }
+
+  beginGame() {
+    this.startScreen = false;
+    this.startGame = true;
+    $('.instructions-page').css('display', 'none');
+    let name = $('.name-textbox').val();
+    name = name.length > 0 ? name : "Player 1"
+    this.game.userCircles[0].name = name;
   }
 
   start() {
@@ -81,19 +91,26 @@ class GameView {
 
   animate(time) {
     let delta = time - this.lastTime;
-
-    this.handleInput();
     // this.camera.update();
     // this.camera.follow(this.game.userCircles[0], 100, 100);
-    this.game.step(delta);
-    this.game.draw(this.ctx);
-    this.lastTime = time;
 
-    if (KEYS.enter) {
-      console.log(KEYS.enter);
-    } else {
-      requestAnimationFrame(this.animate.bind(this));
+    if (this.startScreen) {
+      $('.start-game').click(() => {
+        this.beginGame();
+      })
+    } else if (this.game.gameOver) {
+      $('.gameover-screen').toggle();
+    } else if (this.startGame) {
+      if (this.game.userCircles.length !== 0) {
+        this.handleInput();
+        this.game.draw(this.ctx);
+        this.game.step(delta);
+      }
     }
+
+
+    this.lastTime = time;
+    requestAnimationFrame(this.animate.bind(this));
 
   }
 
@@ -112,8 +129,8 @@ class GameView {
 
   handleInput() {
     const userCircle = this.game.userCircles[0];
-    userCircle.vel[0] *= .9;
-    userCircle.vel[1] *= .9;
+    userCircle.vel[0] *= .8;
+    userCircle.vel[1] *= .8;
     if (KEYS.w) {
       userCircle.power([0, -.5]);
     }

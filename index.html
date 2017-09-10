@@ -6,7 +6,6 @@
   <title>Circle</title>
   <link rel="stylesheet" type="text/css" href="assets/css/reset.css">
   <link rel="stylesheet" type="text/css" href="assets/css/base.css">
-  <script src="assets/keymaster.js"></script>
   <script src="http://code.jquery.com/jquery.js"></script>
   <script src="dist/bundle.js"></script>
 </head>
@@ -14,36 +13,39 @@
 <body>
   <canvas tabindex="1" id="canvas"></canvas>
 
-  <!-- <div class="start-screen">
+  <div class="instructions-page">
 
-    <div class="game-title">Circle Game</div>
 
-    <div class="introduction">
-      <h1> Instructions </h1>
-      <ul>
-        <li> Standard: Eat smaller cells and avoid larger cells </li>
-        <li> Survival: Avoid all cells for as long as possible </li>
-        <li> Multiplayer: Eat the other player before he eats you </li>
-        <li> Controls: Use the arrow keys to move. </li>
-        <li> For multiplayer, player one use WASD | player two use arrow keys</li>
-        <li><a href="http://www.hassantoor.com" target="_blank" class="more-projects"> More projects </a></li>
 
-      </ul>
+    <div class="instructions-box">
+      <div class="game-title">Circle Game</div>
+
+      <div class="introduction">
+        <div> How to play </div>
+        <div>
+          Stay alive as long as you can, eating <br />
+          as many balls as you can to rack up the points. <br />
+          Beware, you resize when you eat too many circles! <br />
+          Use WASD to move around.
+        </div>
+        <div>
+          Enter your name (if you want)!
+        </div>
+
+        <input type='text' class='name-textbox' />
+      </div>
+      <div class="start-game">Play!</div>
     </div>
 
-    <div class="start-game">Standard</div>
-    <div class="survival-game">Survival</div>
-    <div class="multiplayer-game">Two Player</div>
   </div>
 
 
 
 
-  <div class="score"></div>
 
-  <div class="you-win">
+  <div class="gameover-screen">
     <div class="restart">Play Again</div>
-  </div> -->
+  </div>
 
 
 
@@ -60,5 +62,20 @@
   	</filter>
   </defs>
 </svg>
+
+
+<script src="https://www.gstatic.com/firebasejs/4.3.1/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyAyT7ZSp6-XF7S8u0zRig--q6nTslbH8iQ",
+    authDomain: "agarioclone-bff56.firebaseapp.com",
+    databaseURL: "https://agarioclone-bff56.firebaseio.com",
+    projectId: "agarioclone-bff56",
+    storageBucket: "",
+    messagingSenderId: "642272831032"
+  };
+  firebase.initializeApp(config);
+</script>
 
 </html>

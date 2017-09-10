@@ -1,10 +1,11 @@
 const Circle = require('./circle');
 const Util = require('./util');
 const UserCircle = require('./user_circle');
+import _ from 'lodash';
 
 
 const randomRadius = () => {
-  return Math.floor(Math.random() * (15  - 3) + 3);
+  return Math.floor(Math.random() * (15 - 3) + 3);
 }
 
 class Game {
@@ -12,18 +13,32 @@ class Game {
   constructor() {
     this.circles = [];
     this.start = false;
-    this.userCircles = [new UserCircle({game: this})];
+
+    this.userCircles = [new UserCircle({
+      game: this,
+      name: name
+    })];
+
     this.radMult = 1;
     this.velMult = 1;
     this.addCircles();
 
     this.score = 0;
+
+    this.highScores = [];
+
+    this.gameOver = false;
   }
 
   addCircles() {
 
     for (let i = 1; i <= Game.NUM_CIRCLES; i++) {
-      this.circles.push(new Circle({pos: this.randomPosition(), game: this, radius: randomRadius(),  vel: Util.randomVec(0.1)}));
+      this.circles.push(new Circle({
+        pos: this.randomPosition(),
+        game: this,
+        radius: randomRadius(),
+        vel: Util.randomVec(0.1)
+      }));
     }
   }
 
@@ -31,8 +46,13 @@ class Game {
     const allObjects = this.allObjects();
     this.radMult *= 1.05;
     this.velMult *= 1.5;
-    while (this.circles.length <= Game.NUM_CIRCLES *.8) {
-      this.circles.push(new Circle({pos: this.randomPosition(), game: this, radius: randomRadius()*this.radMult, vel: Util.randomVec(0.1, this.velMult)}));
+    while (this.circles.length <= Game.NUM_CIRCLES * .8) {
+      this.circles.push(new Circle({
+        pos: this.randomPosition(),
+        game: this,
+        radius: randomRadius() * this.radMult,
+        vel: Util.randomVec(0.1, this.velMult)
+      }));
     }
   }
 
@@ -41,7 +61,7 @@ class Game {
     let y = Game.DIM_Y * Math.random();
 
     while ((x > Game.DIM_X / 2 - Game.BUFFER_ZONE && x < Game.DIM_X / 2 + Game.BUFFER_ZONE) &&
-    (y > Game.DIM_Y / 2 - Game.BUFFER_ZONE && y < Game.DIM_Y / 2 + Game.BUFFER_ZONE)  ) {
+      (y > Game.DIM_Y / 2 - Game.BUFFER_ZONE && y < Game.DIM_Y / 2 + Game.BUFFER_ZONE)) {
       x = Game.DIM_X * Math.random();
       y = Game.DIM_Y * Math.random();
     }
@@ -50,13 +70,13 @@ class Game {
   }
 
   allObjects() {
-     return [].concat(this.circles, this.userCircles);
+    return [].concat(this.circles, this.userCircles);
   }
 
   draw(ctx) {
     ctx.clearRect(0, 0, Game.DIM_X, Game.DIM_Y);
     const allObjects = this.allObjects()
-    allObjects.forEach( el => {
+    allObjects.forEach(el => {
       el.draw(ctx);
     })
     if (this.userCircles[0].radius > Game.BUFFER_ZONE * .8) {
@@ -66,7 +86,7 @@ class Game {
   }
 
   drawWarning(ctx) {
-    const colors = ['rgb(224, 20, 20)', 'rgb(235, 255, 1)','#f7ad06'];
+    const colors = ['rgb(224, 20, 20)', 'rgb(235, 255, 1)', '#f7ad06'];
     const userCircle = this.userCircles[0];
     ctx.font = "20px Impact";
     ctx.fillStyle = `${colors[Math.floor(Math.random()*colors.length)]}`;
@@ -74,44 +94,58 @@ class Game {
     ctx.font = `${this.radius * .7}px Calibri`;
     ctx.textBaseline = "middle"
     ctx.textAlign = "center";
-    ctx.fillText(`W A R N I N G.. ${Math.floor(50-userCircle.radius+1)}`, userCircle.pos[0], userCircle.pos[1] - userCircle.radius*1.2);
+    ctx.fillText(`W A R N I N G.. ${Math.floor(50-userCircle.radius+1)}`, userCircle.pos[0], userCircle.pos[1] - userCircle.radius * 1.2);
   }
 
   drawScore(ctx) {
     ctx.font = "20px Impact";
     ctx.fillStyle = "rgb(17, 17, 17)";
     ctx.textBaseline = "top"
-    ctx.fillText("Score: "+this.score, 1200, 0);
+    ctx.fillText("Score: " + this.score, 1200, 0);
   }
 
 
   step(delta) {
+    let database = window.firebase.database();
     const allObjects = this.allObjects();
+    const playerOneName = this.userCircles[0].name;
+    let highScores;
+
+    database.ref().on("value", function(snapshot) {
+          highScores = snapshot.val();});
+
     this.moveObjects(delta);
     this.checkCollisions();
-    if (this.circles.length === 0) {
-      window.location.reload();
-    }
-
     if (this.userCircles.length === 0) {
-      window.location.reload();
-    }
-    if (this.userCircles[0].radius > Game.RESET_RADIUS) {
-      this.userCircles[0].radius = 10;
+
+      this.gameOver = true;
+      database.ref().push({
+        name: `${playerOneName}`,
+        score: this.score
+      });
+      this.getHighScores(highScores);
+    } else {
+      if (this.userCircles[0].radius > Game.RESET_RADIUS) {
+        this.userCircles[0].radius = 10;
+      }
+
+      if (allObjects.length < Game.NUM_CIRCLES * .4) {
+        this.addMoreCircles();
+      }
+
     }
 
-    if (allObjects.length < Game.NUM_CIRCLES * .4) {
-      this.addMoreCircles();
-    }
   }
 
-
-
-
+  getHighScores(highScores) {
+      Object.keys(highScores).map(el => highScores[el])
+      highScores = _.orderBy(highScores, ['score'], ['desc'] )
+      this.highScores = highScores.slice(0, 6);
+  }
 
   moveObjects(timeDelta) {
     const allObjects = this.allObjects();
-    allObjects.forEach( el => {
+    allObjects.forEach(el => {
       el.move(timeDelta);
     });
   }
@@ -126,8 +160,8 @@ class Game {
 
   checkCollisions() {
     const allObjects = this.allObjects();
-    for (let i=0; i < allObjects.length; i++) {
-      for (let j=0; j < allObjects.length; j++) {
+    for (let i = 0; i < allObjects.length; i++) {
+      for (let j = 0; j < allObjects.length; j++) {
         if (i === j) {
           continue;
         }
@@ -135,7 +169,7 @@ class Game {
         if (allObjects[i].isCollidedWith(allObjects[j])) {
           let collision = allObjects[i].collideWith(allObjects[j]);
           if (this.userCircles.includes(allObjects[i]) ||
-        this.userCircles.includes(allObjects[j])) {
+            this.userCircles.includes(allObjects[j])) {
             this.score += Game.SCORE;
           }
           if (collision) return;

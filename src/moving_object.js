@@ -34,6 +34,9 @@ class MovingObject {
     bigCircle.vel = [bigCircle.vel[0] * .9, bigCircle.vel[1] * .9];
     bigCircle.radius = Math.sqrt(Math.pow(smallCircle.radius, 2) + Math.pow(bigCircle.radius, 2));
 
+
+
+
     return true;
   }
 

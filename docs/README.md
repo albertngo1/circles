@@ -33,3 +33,14 @@ Day 2: Continue to add necessary API to make the game playable, begin to round o
 Day 3-5: Playable game, add features such as scoring, two player, and perhaps bonus abilities such as spitting out yourself to make you smaller and faster.
 
 BONUS Features: Multiplayer using sockets.
+
+
+
+
+
+TODOs:
+
+figure out firebase read data,
+finish start and ending screen
+more features... viruses.
+fix gameplay ?
