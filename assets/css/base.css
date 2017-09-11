@@ -197,11 +197,17 @@ body {
 .highscore-text {
   margin: 15px 0;
   font-size: 50px;
+  text-decoration: none;
+  user-select: none;
+  cursor: default;
 }
 .highscore-list-item {
   font-size: 25px;
   display: flex;
   justify-content: space-between;
+  text-decoration: none;
+  user-select: none;
+  cursor: default;
 }
 .highscores {
   border: 1px solid black;
