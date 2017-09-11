@@ -213,3 +213,43 @@ body {
   border: 1px solid black;
   width: 200px;
 }
+
+.footer {
+  background-color: rgb(255,255,255);
+  position: absolute;
+  border-radius: 10px;
+  padding: 7px;
+  top: 80%;
+  right: 80%;
+  font-family: 'Archivo Narrow', sans-serif;
+}
+
+.author {
+  color: white;
+  font-family: 'Archivo Narrow', sans-serif;
+  font-size: 40px;
+  position: absolute;
+  top: 40%;
+  right: 70%;
+  user-select: none;
+  text-decoration: none;
+  cursor: default;
+
+}
+.footer > ul {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 60px;
+}
+
+.footer > ul > li > a{
+  text-decoration: none;
+  color: black;
+  user-select: none;
+}
+
+.footer > ul > li > a:hover {
+  text-decoration: none;
+  color: rgb(82, 82, 82);
+}
