@@ -97,8 +97,7 @@ var Game = function () {
     this.start = false;
 
     this.userCircles = [new UserCircle({
-      game: this,
-      name: name
+      game: this
     })];
 
     this.radMult = 1;
@@ -207,13 +206,17 @@ var Game = function () {
       this.moveObjects(delta);
       this.checkCollisions();
       if (this.userCircles.length === 0) {
-
         this.gameOver = true;
         database.ref().push({
           name: '' + playerOneName,
           score: this.score
         });
         this.getHighScores(highScores);
+        $('.gameover-screen').toggle();
+
+        $('.gameover-screen').append('<div class=\'end-game-score\'>\n          Your score was ' + this.score + '!\n         </div>');
+
+        this.appendHighScores();
       } else {
         if (this.userCircles[0].radius > Game.RESET_RADIUS) {
           this.userCircles[0].radius = 10;
@@ -232,6 +235,13 @@ var Game = function () {
       });
       highScores = _lodash2.default.orderBy(highScores, ['score'], ['desc']);
       this.highScores = highScores.slice(0, 6);
+    }
+  }, {
+    key: 'appendHighScores',
+    value: function appendHighScores() {
+      this.highScores.forEach(function (el) {
+        $('.highscores').append('<li class=\'highscore-list-item\'>\n            <div>\n              ' + el.name + '\n            </div>\n            <div>\n            ' + el.score + '\n            </div>\n        </li>');
+      });
     }
   }, {
     key: 'moveObjects',
@@ -448,7 +458,7 @@ window.onkeyup = function (e) {
 };
 
 var GameView = function () {
-  function GameView(game, ctx, camera) {
+  function GameView(game, ctx) {
     _classCallCheck(this, GameView);
 
     this.game = game;
@@ -458,9 +468,6 @@ var GameView = function () {
     this.paused = false;
     this.startGame = false;
     this.startScreen = true;
-
-    // this.camera = camera;
-
   }
 
   _createClass(GameView, [{
@@ -492,8 +499,6 @@ var GameView = function () {
         $('.start-game').click(function () {
           _this.beginGame();
         });
-      } else if (this.game.gameOver) {
-        $('.gameover-screen').toggle();
       } else if (this.startGame) {
         if (this.game.userCircles.length !== 0) {
           this.handleInput();
@@ -650,15 +655,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
   var canvas = document.getElementById("canvas");
   var ctx = canvas.getContext('2d');
+  var game = void 0;
 
   canvas.width = Game.DIM_X;
   canvas.height = Game.DIM_Y;
 
-  var game = new Game();
+  // const camera = new Camera(0, 0,
+  //   100, 100, canvas.width, canvas.height);
+  game = new Game();
 
-  var camera = new Camera(0, 0, 100, 100, canvas.width, canvas.height);
+  new GameView(game, ctx).start();
 
-  new GameView(game, ctx, camera).start();
+  $('.restart').click(function () {
+    window.location.reload();
+  });
 });
 
 /***/ }),

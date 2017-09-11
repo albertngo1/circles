@@ -15,8 +15,7 @@ class Game {
     this.start = false;
 
     this.userCircles = [new UserCircle({
-      game: this,
-      name: name
+      game: this
     })];
 
     this.radMult = 1;
@@ -117,13 +116,22 @@ class Game {
     this.moveObjects(delta);
     this.checkCollisions();
     if (this.userCircles.length === 0) {
-
       this.gameOver = true;
       database.ref().push({
         name: `${playerOneName}`,
         score: this.score
       });
       this.getHighScores(highScores);
+      $('.gameover-screen').toggle();
+
+      $('.gameover-screen').append(
+        `<div class='end-game-score'>
+          Your score was ${this.score}!
+         </div>`
+      )
+
+      this.appendHighScores();
+
     } else {
       if (this.userCircles[0].radius > Game.RESET_RADIUS) {
         this.userCircles[0].radius = 10;
@@ -141,6 +149,21 @@ class Game {
       Object.keys(highScores).map(el => highScores[el])
       highScores = _.orderBy(highScores, ['score'], ['desc'] )
       this.highScores = highScores.slice(0, 6);
+  }
+
+  appendHighScores() {
+    this.highScores.forEach( el => {
+      $('.highscores').append(
+        `<li class='highscore-list-item'>
+            <div>
+              ${el.name}
+            </div>
+            <div>
+            ${el.score}
+            </div>
+        </li>`
+      );
+    });
   }
 
   moveObjects(timeDelta) {

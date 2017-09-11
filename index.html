@@ -3,9 +3,12 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Circle</title>
+  <title>CIRCLES</title>
+  <link href="https://fonts.googleapis.com/css?family=Archivo+Narrow|Gloria+Hallelujah" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="assets/css/reset.css">
   <link rel="stylesheet" type="text/css" href="assets/css/base.css">
+  <link rel="icon" href="assets/circle.ico" >
+
   <script src="http://code.jquery.com/jquery.js"></script>
   <script src="dist/bundle.js"></script>
 </head>
@@ -16,19 +19,41 @@
   <div class="instructions-page">
 
 
+    <div class="game-title">
+      <div class="title" style=color:#ff0000>
+        C
+      </div>
+      <div class="title" style=color:#ebff00>
+        I
+      </div>
+      <div class="title" style=color:#00ff19>
+        R
+      </div>
+      <div class="title" style=color:#00e0ff>
+        C
+      </div>
+      <div class="title" style=color:#0003ff>
+        L
+      </div>
+      <div class="title" style=color:#8f00ff>
+        E
+      </div>
+      <div class="title" style=color:#ff00fc>
+        S
+      </div>
+    </div>
 
     <div class="instructions-box">
-      <div class="game-title">Circle Game</div>
 
       <div class="introduction">
-        <div> How to play </div>
-        <div>
+        <div class="how-to-play"> How to play </div>
+        <div class="how-to-body">
           Stay alive as long as you can, eating <br />
-          as many balls as you can to rack up the points. <br />
+          as many balls as you can to rack up  points. <br />
           Beware, you resize when you eat too many circles! <br />
           Use WASD to move around.
         </div>
-        <div>
+        <div class="enter-name">
           Enter your name (if you want)!
         </div>
 
@@ -44,7 +69,14 @@
 
 
   <div class="gameover-screen">
-    <div class="restart">Play Again</div>
+    <div class="gameover-wrap">
+      <div class="restart">Play Again!</div>
+      <div class="highscore-text">High Scores</div>
+      <ul class="highscores">
+
+      </ul>
+    </div>
+
   </div>
 
 

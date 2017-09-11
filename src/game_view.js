@@ -59,7 +59,7 @@ window.onkeyup = (e) => {
 
 class GameView {
 
-  constructor(game, ctx, camera) {
+  constructor(game, ctx) {
     this.game = game;
     this.ctx = ctx;
     this.lastTime = 0;
@@ -67,8 +67,6 @@ class GameView {
     this.paused = false;
     this.startGame = false;
     this.startScreen = true;
-
-    // this.camera = camera;
 
 
   }
@@ -98,8 +96,6 @@ class GameView {
       $('.start-game').click(() => {
         this.beginGame();
       })
-    } else if (this.game.gameOver) {
-      $('.gameover-screen').toggle();
     } else if (this.startGame) {
       if (this.game.userCircles.length !== 0) {
         this.handleInput();
