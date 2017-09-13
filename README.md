@@ -1,6 +1,6 @@
 # CIRCLES
 
-Live
+[Live](https://albertngo1.github.io/CIRCLES/)
 
 ### Background
 CIRCLES is a game of circles where the goal is to eat as many circles smaller than you while not getting eaten yourself. Get a high score and have your name etched in history. The game draws inspiration from the popular massively-multiplayer online game Agar.io.
