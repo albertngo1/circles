@@ -22,7 +22,6 @@
     "firebase-tools": "^3.10.1",
     "lodash": "^4.17.4",
     "matter-js": "^0.13.0",
-    "socket.io": "^2.0.3",
-    "websocket.io": "^0.2.1"
+    "socket.io": "^2.0.3"
   }
 }
