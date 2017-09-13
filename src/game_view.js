@@ -47,7 +47,6 @@ window.onkeypress = (e) => {
 
 window.onkeyup = (e) => {
   const keyPress = e.keyCode;
-  // e.preventDefault();
 
   if (keyPress === GLOBAL.KEY_A) KEYS.a = false;
   if (keyPress === GLOBAL.KEY_S) KEYS.s = false;

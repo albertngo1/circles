@@ -34,8 +34,6 @@ this.highScores = highScores.slice(0, 6);
 
 An event listener was applied on the database so that when new data is introduced to the database, a "snapshot" of the data is returned for use.
 
-#### asdk
-
 
 
 #### Tech
