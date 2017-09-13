@@ -1,5 +1,7 @@
 # CIRCLES
 
+![CIRCLES](/assets/circle_title.png)
+
 [Live](https://albertngo1.github.io/CIRCLES/)
 
 ### Background
